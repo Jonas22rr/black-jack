@@ -105,6 +105,9 @@ public:
         // TODO: dealer gets cards until he has 17 or more
         dealer.setCardSum();
         checkWinner();
+        if (playAgain()) {
+            start();
+        }
     }
 
     void checkUserWantNewCard() {
@@ -149,11 +152,26 @@ public:
             return ;
         }
     }
+
+    bool playAgain() {
+        cout << "Do you want to play again? (y/n)" << endl;
+        cin >> result;
+        if (result == 'y') {
+            return true;
+        }
+        return false;
+    }
 };
 
 int main() {
     Game game;
-    game.start();
+    string result;
+    cout << "Welcome to BlackJack!" << endl;
+    cout << "Do you want to start the game? (y/n)" << endl;
+    cin >> result;
+    if (result == "y") {
+        game.start();
+    }
     return 0;
 }
 
