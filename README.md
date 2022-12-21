@@ -8,4 +8,4 @@ if you think you have a good hand, go ahead and don't hit another card.
 
 but if you think you have a bad hand, hit another card.
 
-did you won? 
+did you win? 
