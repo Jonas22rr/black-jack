@@ -35,6 +35,7 @@ private:
     Service service;
     int card1;
     int card2;
+    double depositedMoney = 0;
     // public Methoden können von außen aufgerufen werden (z.B. in main oder anderen Klassen)
 public:
     // User ist der Konstruktor der Klasse User
@@ -55,26 +56,64 @@ public:
         return this->card2;
     }
 
-    int getNewCard() {
-        return service.getRandomCard();
+    void setDeposite() {
+        double deposite;
+        cout << "How much money do they want to deposit?" << endl;
+        cin >> deposite;
+        this->depositedMoney = deposite;
+    }
+
+    double getDeposite() {
+        return this->depositedMoney;
     }
 };
 
 class Dealer {
 private:
     int cardSum = 0;
+    int firstCard = 0;
+    int secondCard = 0;
     Service service;
 public:
     void setCardSum() {
+        if (this->cardSum > 17) return;
         // shortcut cardSum = cardSum + service.getRandomCard();
-        this->cardSum +=  service.getRandomCard();
+        int card = service.getRandomCard();
+        this->cardSum +=  card;
+        cout << "Dealer draws a " << card << endl;
+        cout << "Dealer has " << this->cardSum << " in sum"<< endl;
         if (this->cardSum < 17) {
             setCardSum();
         }
     }
 
+    void setFirstTwoCards() {
+        setFirstCard();
+        setSecondCard();
+    }
+
+    void setFirstCard() {
+        int card = service.getRandomCard();
+        this->cardSum += card;
+        this->firstCard = card;
+    }
+
+    void setSecondCard() {
+        int card = service.getRandomCard();
+        this->cardSum += card;
+        this->secondCard = card;
+    }
+
     int getCardSum() {
         return this->cardSum;
+    }
+
+    int getFirstCard() {
+        return this->firstCard;
+    }
+
+    int getSecondCard() {
+        return this->secondCard;
     }
 };
 
@@ -86,9 +125,11 @@ private:
     Service service;
     int cardSum;
     char result;
+    string winner;
 public:
     // void == Methode -> liefert nichts zurück
     void start() {
+        user.setDeposite();
         // endl ist ein Zeilenumbruch (wie \n)
         cout << "Your cards are: " << user.getCard1() << " and " << user.getCard2() << endl;
         cardSum = user.getCard1() + user.getCard2();
@@ -99,12 +140,20 @@ public:
         }
         // TODO: dealer gets one card that will be print
         // TODO: get users ass card (if he wants 1 or 11)
+        dealer.setFirstTwoCards();
+        cout << "The dealers first Card is: " << dealer.getFirstCard() << endl;
         // folgendes ist eine recursive Funktion (Funktion / Method ist das selbe)
         checkUserWantNewCard();
 
-        // TODO: dealer gets cards until he has 17 or more
+        cout << "The dealers second Card is: " << dealer.getSecondCard() << endl;
         dealer.setCardSum();
         checkWinner();
+        cout << "The winner is: " << winner << endl;
+        if (winner == "You") {
+            cout << "You won " << user.getDeposite() * 1.5 << "€" << endl;
+        } else {
+            cout << "You lost " << user.getDeposite() << "€" << endl;
+        }
         if (playAgain()) {
             start();
         }
@@ -131,24 +180,24 @@ public:
 
     void checkWinner() {
         if (service.isHigherThan21(cardSum)) {
-            cout << "You lost!" << endl;
+            this->winner = "Dealer";
             return;
         } else if (cardSum == 21) {
-            cout << "You won!" << endl;
+            this->winner = "You";
             return;
         }
         cout << "Cards from Dealer are: " << dealer.getCardSum() << endl;
         if (service.isHigherThan21(dealer.getCardSum())) {
-            cout << "You win!" << endl;
+            this->winner = "You";
             return;
         } else if (cardSum > dealer.getCardSum()) {
-            cout << "You won!" << endl;
+            this->winner = "You";
             return ;
         } else if (cardSum == dealer.getCardSum()) {
-            cout << "tie!" << endl;
+            this->winner = "Nobody";
             return ;
         } else {
-            cout << "You lost!" << endl;
+            this->winner = "Dealer";
             return ;
         }
     }
@@ -165,11 +214,11 @@ public:
 
 int main() {
     Game game;
-    string result;
+    string gameStart;
     cout << "Welcome to BlackJack!" << endl;
     cout << "Do you want to start the game? (y/n)" << endl;
-    cin >> result;
-    if (result == "y") {
+    cin >> gameStart;
+    if (gameStart == "y") {
         game.start();
     }
     return 0;
