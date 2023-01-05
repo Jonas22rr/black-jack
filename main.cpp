@@ -35,16 +35,27 @@ private:
     Service service;
     int card1;
     int card2;
+    int cardSum;
     double depositedMoney = 0;
     // public Methoden können von außen aufgerufen werden (z.B. in main oder anderen Klassen)
 public:
-    // User ist der Konstruktor der Klasse User
-    // Ein Konstruktor wird immer aufgerufen, wenn ein Objekt einer Klasse erstellt wird
-    User() {
-        // mit dem Punkt "." kann auf die Methoden der Klasse zugegriffen werden
-        card1 = service.getRandomCard();
-        card2 = service.getRandomCard();
+    void setFirstTwoCards() {
+        this->card1 = service.getRandomCard();
+        this->card2 = service.getRandomCard();
     }
+
+    int getCardSum() {
+        return this->cardSum;
+    }
+
+    void setCardSumFromFirstTwoCards() {
+        this->cardSum = this->card1 + this->card2;
+    }
+
+    void setCardSum(int card) {
+        this->cardSum += card;
+    }
+
     // Methode mit einem Rückgabewert vom Typ int
     int getCard1() {
         // this ist ein Zeiger auf das aktuelle Objekt
@@ -52,8 +63,30 @@ public:
         return this->card1;
     }
 
+    void setCard1(int card) {
+        this->card1 = card;
+    }
+
     int getCard2() {
         return this->card2;
+    }
+
+    void setCard2(int card) {
+        this->card2 = card;
+    }
+
+    int getChoosedCard() {
+        int choosedCard;
+        cout << "You got a Ass. Choose 1 or 11" << endl;
+        cin >> choosedCard;
+        if (choosedCard == 1) {
+            return 1;
+        } else if (choosedCard == 11) {
+            return 11;
+        } else {
+            cout << "It must be a 1 or 11" << endl;
+            return getChoosedCard();
+        }
     }
 
     void setDeposite() {
@@ -94,7 +127,7 @@ public:
 
     void setFirstCard() {
         int card = service.getRandomCard();
-        this->cardSum += card;
+        this->cardSum = card;
         this->firstCard = card;
     }
 
@@ -130,10 +163,17 @@ public:
     // void == Methode -> liefert nichts zurück
     void start() {
         user.setDeposite();
+        user.setFirstTwoCards();
         // endl ist ein Zeilenumbruch (wie \n)
         cout << "Your cards are: " << user.getCard1() << " and " << user.getCard2() << endl;
-        cardSum = user.getCard1() + user.getCard2();
-        cout << "In sum you have: " << cardSum << endl;
+        cout << "In sum you have: " << user.getCard1() + user.getCard2() << endl;
+        if (user.getCard1() == 11 ) {
+            user.setCard1(user.getChoosedCard());
+        } else if (user.getCard2() == 11) {
+            user.setCard2(user.getChoosedCard());
+        }
+        user.setCardSumFromFirstTwoCards();
+
         if (service.isHigherThan21(cardSum)) {
             cout << "You lost!" << endl;
             return;
@@ -162,16 +202,18 @@ public:
     void checkUserWantNewCard() {
         cout << "Do you want a new card? (y/n)" << endl;
         cin >> result;
-
         if (result == 'y') {
             int card = service.getRandomCard();
+            if (card == 11) {
+                card = user.getChoosedCard();
+            }
             cout << "Your new card is: " << card << endl;
             // shortcut für cardSum = cardSum + card
-            cardSum += card;
-            cout << "In sum you have: " << cardSum << endl;
-            if (service.isHigherThan21(cardSum)) {
+            user.setCardSum(card);
+            cout << "In sum you have: " << user.getCardSum() << endl;
+            if (service.isHigherThan21(user.getCardSum())) {
                 return;
-            } if (cardSum == 21) {
+            } if (user.getCardSum() == 21) {
                 return;
             }
             checkUserWantNewCard();
@@ -179,7 +221,7 @@ public:
     }
 
     void checkWinner() {
-        if (service.isHigherThan21(cardSum)) {
+        if (service.isHigherThan21(user.getCardSum())) {
             this->winner = "Dealer";
             return;
         } else if (cardSum == 21) {
@@ -190,10 +232,10 @@ public:
         if (service.isHigherThan21(dealer.getCardSum())) {
             this->winner = "You";
             return;
-        } else if (cardSum > dealer.getCardSum()) {
+        } else if (user.getCardSum() > dealer.getCardSum()) {
             this->winner = "You";
             return ;
-        } else if (cardSum == dealer.getCardSum()) {
+        } else if (user.getCardSum() == dealer.getCardSum()) {
             this->winner = "Nobody";
             return ;
         } else {
