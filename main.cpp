@@ -110,7 +110,6 @@ private:
 public:
     void setCardSum() {
         if (this->cardSum > 17) return;
-        // shortcut cardSum = cardSum + service.getRandomCard();
         int card = service.getRandomCard();
         this->cardSum +=  card;
         cout << "Dealer draws a " << card << endl;
