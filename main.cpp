@@ -208,7 +208,6 @@ public:
                 card = user.getChoosedCard();
             }
             cout << "Your new card is: " << card << endl;
-            // shortcut für cardSum = cardSum + card
             user.setCardSum(card);
             cout << "In sum you have: " << user.getCardSum() << endl;
             if (service.isHigherThan21(user.getCardSum())) {
